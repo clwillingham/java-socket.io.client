@@ -19,9 +19,11 @@ public class IOSocket {
 	private int closingTimeout;
 	private String[] protocals;
 	private String webSocketAddress;
+	private MessageCallback callback;
 	
-	public IOSocket(String address){
+	public IOSocket(String address, MessageCallback callback){
 		webSocketAddress = address;
+		this.callback = callback;
 	}
 	
 	
@@ -38,7 +40,7 @@ public class IOSocket {
 			setClosingTimeout(Integer.parseInt(data[2]));
 			setProtocals(data[3].split(","));
 		}
-		webSocket = new IOWebSocket(URI.create(webSocketAddress+"/socket.io/1/websocket/"+sessionID));
+		webSocket = new IOWebSocket(URI.create(webSocketAddress+"/socket.io/1/websocket/"+sessionID), callback);
 		System.out.println("connecting to " + webSocket.getURI().toString());
 		webSocket.connect();
 		System.out.println("connected");

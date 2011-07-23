@@ -11,10 +11,12 @@ public class IOWebSocket extends WebSocketClient{
 	
 	private boolean connected;
 	private IOBeat heartBeater;
+	private MessageCallback callback;
+	private static int currentID = 0;
 
-	public IOWebSocket(URI arg0) {
+	public IOWebSocket(URI arg0, MessageCallback callback) {
 		super(arg0);
-		// TODO Auto-generated constructor stub
+		this.callback = callback;
 	}
 
 	@Override
@@ -43,6 +45,9 @@ public class IOWebSocket extends WebSocketClient{
 				e.printStackTrace();
 			}
 		}
+		if(message.getType() == IOMessage.MESSAGE){
+			callback.onMessage(message.getMessageData());
+		}
 	}
 
 	@Override
@@ -55,7 +60,18 @@ public class IOWebSocket extends WebSocketClient{
 		this.send("1::"+path+"?"+query);
 		
 	}
+	public void SendMessage(IOMessage message) throws IOException{
+		send(message.toString());
+	}
 	
+	public void sendMessage(String message) throws IOException{
+		send(new Message(message).toString());
+	}
 	
+	public static int genID(){
+		currentID++;
+		return currentID;
+		
+	}
 
 }

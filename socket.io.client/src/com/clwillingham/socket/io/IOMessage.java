@@ -15,21 +15,38 @@ public class IOMessage {
 	private String endpoint = "";
 	private String messageData;
 	
+	public IOMessage(int type, int id, String endpoint, String data){
+		this.type = type;
+		this.id = id;
+		this.endpoint = endpoint;
+		this.messageData = data;
+	}
+	public IOMessage(){
+		
+	}
+	
 	
 	public static IOMessage parseMsg(String message){
 		String[] content = message.split(":");
 		IOMessage msg = new IOMessage();
 		msg.setType(Integer.parseInt(content[0]));
+		
 		if(message.endsWith("::")){
 			msg.setId(-1);
 			msg.setMessageData("");
 			msg.setEndpoint("");
 			return msg;
 		}
-		
-		msg.setId(Integer.parseInt(content[1]));
-		msg.setEndpoint(content[2]);
-		msg.setMessageData(content[3]);
+		System.out.println(content[1]);
+		if(!content[1].equals("")){
+			msg.setId(Integer.parseInt(content[1]));
+		}
+		if(!content[2].equals("")){
+			msg.setEndpoint(content[2]);
+		}
+		if(!content[3].equals("")){
+			msg.setMessageData(content[3]);
+		}
 		return msg;
 	}
 	
@@ -37,7 +54,10 @@ public class IOMessage {
 		if(id == -1 && endpoint.equals("") && messageData.equals("")){
 			return type+"::";
 		}
-		if(id > -1){
+		else if(id == -1 && endpoint.equals("")){
+			return type+":::"+messageData;
+		}
+		else if(id > -1){
 			return type+":"+id+":"+endpoint+":"+messageData;
 		}
 		else{
