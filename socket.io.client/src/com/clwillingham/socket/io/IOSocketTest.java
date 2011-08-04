@@ -26,7 +26,7 @@ public class IOSocketTest {
 				
 			}
 		});
-		socket.connect("http://ubuntu-server:8000");
+		socket.connect();
 		System.out.println("connected to server");
 		Thread.sleep(5000);
 		socket.getWebSocket().sendMessage("this is a test");

@@ -27,7 +27,8 @@ public class IOSocket {
 	}
 	
 	
-	public void connect(String url) throws IOException{
+	public void connect() throws IOException{
+		String url = webSocketAddress.replace("ws://", "http://");
 		URL connection = new URL(url+"/socket.io/1/"); //handshake url
 		InputStream stream = connection.openStream();
 		Scanner in = new Scanner(stream);
