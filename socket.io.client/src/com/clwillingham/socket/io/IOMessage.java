@@ -27,7 +27,7 @@ public class IOMessage {
 	
 	
 	public static IOMessage parseMsg(String message){
-		String[] content = message.split(":");
+		String[] content = message.split(":", 4);
 		IOMessage msg = new IOMessage();
 		msg.setType(Integer.parseInt(content[0]));
 		

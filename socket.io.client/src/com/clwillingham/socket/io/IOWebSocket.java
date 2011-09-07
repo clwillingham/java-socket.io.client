@@ -52,8 +52,7 @@ public class IOWebSocket extends WebSocketClient{
 
 	@Override
 	public void onOpen() {
-		// TODO Auto-generated method stub
-		
+		callback.onOpen();
 	}
 	
 	public void init(String path, String query) throws IOException{
