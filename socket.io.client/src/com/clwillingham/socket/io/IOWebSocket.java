@@ -59,7 +59,7 @@ public class IOWebSocket extends WebSocketClient{
 		this.send("1::"+path+"?"+query);
 		
 	}
-	public void SendMessage(IOMessage message) throws IOException{
+	public void sendMessage(IOMessage message) throws IOException{
 		send(message.toString());
 	}
 	
