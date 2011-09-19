@@ -1,14 +1,14 @@
 package com.clwillingham.socket.io;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Scanner;
 
-import net.tootallnate.websocket.WebSocketClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class IOSocket {
 	
@@ -48,7 +48,29 @@ public class IOSocket {
 		//webSocket.init();
 		
 	}
-
+	
+	
+	public void emit(String event, JSONObject... message) throws IOException {
+		try {
+			JSONObject data = new JSONObject();
+			JSONArray args = new JSONArray();
+			for (JSONObject arg : message) {
+				args.put(arg);
+			}
+			data.put("name", event);
+			data.put("args", args);
+			IOMessage packet = new IOMessage(IOMessage.EVENT, "", data.toString());
+			webSocket.sendMessage(packet);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void send(String message) throws IOException {
+		IOMessage packet = new IOMessage(IOMessage.MESSAGE, "", message);
+		webSocket.sendMessage(packet);
+	}
 
 	public void setWebSocket(IOWebSocket webSocket) {
 		this.webSocket = webSocket;

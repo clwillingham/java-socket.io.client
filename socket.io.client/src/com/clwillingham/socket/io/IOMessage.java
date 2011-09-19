@@ -21,6 +21,13 @@ public class IOMessage {
 		this.endpoint = endpoint;
 		this.messageData = data;
 	}
+	
+	public IOMessage(int type, String endpoint, String data) {
+		this.type = type;
+		this.endpoint = endpoint;
+		this.messageData = data;
+	}
+	
 	public IOMessage(){
 		
 	}

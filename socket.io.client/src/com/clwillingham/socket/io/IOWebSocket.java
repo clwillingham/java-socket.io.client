@@ -5,6 +5,10 @@ import java.net.URI;
 import java.util.Date;
 import java.util.Timer;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import net.tootallnate.websocket.WebSocketClient;
 
 public class IOWebSocket extends WebSocketClient{
@@ -36,7 +40,9 @@ public class IOWebSocket extends WebSocketClient{
 		// TODO Auto-generated method stub
 		System.out.println(arg0);
 		IOMessage message = IOMessage.parseMsg(arg0);
-		if(message.getType() == IOMessage.HEARTBEAT){
+		
+		switch (message.getType()) {			
+		case IOMessage.HEARTBEAT:
 			try {
 				send("2::");
 				System.out.println("HeartBeat written to server");
@@ -44,9 +50,44 @@ public class IOWebSocket extends WebSocketClient{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		if(message.getType() == IOMessage.MESSAGE){
+			break;
+			
+		case IOMessage.MESSAGE:
 			callback.onMessage(message.getMessageData());
+			break;
+			
+		case IOMessage.JSONMSG:
+			try {
+				callback.onMessage(new JSONObject(message.getMessageData()));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		
+		case IOMessage.EVENT:
+			try {
+				JSONObject event = new JSONObject(message.getMessageData());
+				JSONArray args = event.getJSONArray("args");
+				JSONObject[] argsArray = new JSONObject[args.length()];
+				for (int i = 0; i < args.length(); i++) {
+					argsArray[i] = args.getJSONObject(i);
+				}
+				String eventName = event.getString("name");
+				
+				callback.on(eventName, argsArray);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case IOMessage.ACK:
+		case IOMessage.ERROR:
+		case IOMessage.CONNECT:
+		case IOMessage.DISCONNECT:
+			//TODO
+			break;
 		}
 	}
 

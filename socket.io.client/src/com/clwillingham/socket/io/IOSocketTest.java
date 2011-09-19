@@ -3,6 +3,8 @@ package com.clwillingham.socket.io;
 import java.io.IOException;
 import java.net.URI;
 
+import org.json.JSONObject;
+
 public class IOSocketTest {
 	
 	public static void main(String[] args) throws IOException, InterruptedException{
@@ -20,8 +22,15 @@ public class IOSocketTest {
 				System.out.println("message recieved from server: "+message);
 			}
 			
+			
 			@Override
-			public void on(String event, String data) {
+			public void on(String event, JSONObject... data) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onMessage(JSONObject json) {
 				// TODO Auto-generated method stub
 				
 			}
