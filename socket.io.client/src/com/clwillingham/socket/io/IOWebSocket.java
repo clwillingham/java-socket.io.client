@@ -2,8 +2,6 @@ package com.clwillingham.socket.io;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
-import java.util.Timer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,21 +11,16 @@ import net.tootallnate.websocket.WebSocketClient;
 
 public class IOWebSocket extends WebSocketClient{
 	
-	private boolean connected;
-	private IOBeat heartBeater;
 	private MessageCallback callback;
+	private IOSocket ioSocket;
 	private static int currentID = 0;
 
-	public IOWebSocket(URI arg0, MessageCallback callback) {
+	public IOWebSocket(URI arg0, IOSocket ioSocket, MessageCallback callback) {
 		super(arg0);
 		this.callback = callback;
+		this.ioSocket = ioSocket;
 	}
 
-	@Override
-	public void onClose() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void onIOError(IOException arg0) {
@@ -81,10 +74,13 @@ public class IOWebSocket extends WebSocketClient{
 				e.printStackTrace();
 			}
 			break;
+
+		case IOMessage.CONNECT:
+			ioSocket.onConnect();
+			break;
 			
 		case IOMessage.ACK:
 		case IOMessage.ERROR:
-		case IOMessage.CONNECT:
 		case IOMessage.DISCONNECT:
 			//TODO
 			break;
@@ -93,8 +89,15 @@ public class IOWebSocket extends WebSocketClient{
 
 	@Override
 	public void onOpen() {
-		callback.onOpen();
+		ioSocket.onOpen();
 	}
+	
+	@Override
+	public void onClose() {
+		ioSocket.onClose();
+		ioSocket.onDisconnect();
+	}
+
 	
 	public void init(String path, String query) throws IOException{
 		this.send("1::"+path+"?"+query);

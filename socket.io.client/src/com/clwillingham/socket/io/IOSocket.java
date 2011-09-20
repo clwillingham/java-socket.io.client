@@ -21,11 +21,14 @@ public class IOSocket {
 	private String webSocketAddress;
 	private MessageCallback callback;
 	
+	private boolean connecting;
+	private boolean connected;
+	private boolean open;
+	
 	public IOSocket(String address, MessageCallback callback){
 		webSocketAddress = address;
 		this.callback = callback;
 	}
-	
 	
 	public void connect() throws IOException{
 		String url = webSocketAddress.replace("ws://", "http://");
@@ -41,14 +44,10 @@ public class IOSocket {
 			setClosingTimeout(Integer.parseInt(data[2]));
 			setProtocals(data[3].split(","));
 		}
-		webSocket = new IOWebSocket(URI.create(webSocketAddress+"/socket.io/1/websocket/"+sessionID), callback);
-		System.out.println("connecting to " + webSocket.getURI().toString());
+		webSocket = new IOWebSocket(URI.create(webSocketAddress+"/socket.io/1/websocket/"+sessionID), this, callback);
 		webSocket.connect();
-		System.out.println("connected");
-		//webSocket.init();
 		
 	}
-	
 	
 	public void emit(String event, JSONObject... message) throws IOException {
 		try {
@@ -71,16 +70,60 @@ public class IOSocket {
 		IOMessage packet = new IOMessage(IOMessage.MESSAGE, "", message);
 		webSocket.sendMessage(packet);
 	}
-
-	public void setWebSocket(IOWebSocket webSocket) {
-		this.webSocket = webSocket;
+	
+	public synchronized void disconnect() {
+		if (connected) {
+			try {
+				if (open) {
+					webSocket.sendMessage(new IOMessage(IOMessage.DISCONNECT, "", ""));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			onDisconnect();
+		}	
 	}
 
-
-	public IOWebSocket getWebSocket() {
-		return webSocket;
+	synchronized void onOpen() {
+		open = true;
 	}
-
+	
+	synchronized void onClose() {
+		open = false;
+	}
+	
+	synchronized void onConnect() {
+		if (!connected) {
+			connected = true;
+			connecting = false;
+			
+			callback.onConnect();
+		}
+	}
+	
+	synchronized void onDisconnect() {
+		boolean wasConnected = connected;
+		
+		connected = false;
+		connecting = false;
+		
+		if (open) {
+			try {
+				webSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+		if (wasConnected) {
+			callback.onDisconnect();
+			
+			//TODO: reconnect
+		}
+	}
 
 	public void setConnection(URL connection) {
 		this.connection = connection;

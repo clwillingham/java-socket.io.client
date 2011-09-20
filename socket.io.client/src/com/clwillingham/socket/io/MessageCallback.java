@@ -6,7 +6,6 @@ public interface MessageCallback {
 	public void on(String event, JSONObject... data);
 	public void onMessage(String message);
 	public void onMessage(JSONObject json);
-	public void onOpen();
-	
-	
+	public void onConnect();
+	public void onDisconnect();
 }
