@@ -30,23 +30,37 @@ public class IOSocket {
 		this.callback = callback;
 	}
 	
-	public void connect() throws IOException{
+	public void connect() throws IOException {
+		// check for socket.io namespace
+		String namespace = "";
+		int i = webSocketAddress.lastIndexOf("/");
+		if (webSocketAddress.charAt(i-1) != '/') {
+			namespace = webSocketAddress.substring(i);
+			webSocketAddress = webSocketAddress.substring(0, i);
+		}
+
+		// perform handshake
 		String url = webSocketAddress.replace("ws://", "http://");
 		URL connection = new URL(url+"/socket.io/1/"); //handshake url
 		InputStream stream = connection.openStream();
 		Scanner in = new Scanner(stream);
 		String response = in.nextLine(); //pull the response
 		System.out.println(response);
-		if(response.contains(":")){
+		
+		// process handshake response
+		// example: 4d4f185e96a7b:15:10:websocket,xhr-polling
+		if(response.contains(":")) {
 			String[] data = response.split(":");
 			setSessionID(data[0]);
 			setHeartTimeOut(Integer.parseInt(data[1]));
 			setClosingTimeout(Integer.parseInt(data[2]));
 			setProtocals(data[3].split(","));
 		}
-		webSocket = new IOWebSocket(URI.create(webSocketAddress+"/socket.io/1/websocket/"+sessionID), this, callback);
-		webSocket.connect();
 		
+		connecting = true;
+		webSocket = new IOWebSocket(URI.create(webSocketAddress+"/socket.io/1/websocket/"+sessionID), this, callback);
+		webSocket.setNamespace(namespace);
+		webSocket.connect();
 	}
 	
 	public void emit(String event, JSONObject... message) throws IOException {

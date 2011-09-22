@@ -14,6 +14,7 @@ public class IOWebSocket extends WebSocketClient{
 	private MessageCallback callback;
 	private IOSocket ioSocket;
 	private static int currentID = 0;
+	private String namespace;
 
 	public IOWebSocket(URI arg0, IOSocket ioSocket, MessageCallback callback) {
 		super(arg0);
@@ -89,6 +90,13 @@ public class IOWebSocket extends WebSocketClient{
 
 	@Override
 	public void onOpen() {
+		try {
+			if (namespace != "")
+				init(namespace);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		ioSocket.onOpen();
 	}
 	
@@ -98,6 +106,10 @@ public class IOWebSocket extends WebSocketClient{
 		ioSocket.onDisconnect();
 	}
 
+
+	public void init(String path) throws IOException{
+		send("1::"+path);
+	}
 	
 	public void init(String path, String query) throws IOException{
 		this.send("1::"+path+"?"+query);
@@ -115,6 +127,14 @@ public class IOWebSocket extends WebSocketClient{
 		currentID++;
 		return currentID;
 		
+	}
+
+	public void setNamespace(String ns) {
+		namespace = ns;
+	}
+	
+	public String getNamespace() {
+		return namespace;
 	}
 
 }

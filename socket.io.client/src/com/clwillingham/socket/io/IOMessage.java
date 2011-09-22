@@ -51,7 +51,7 @@ public class IOMessage {
 		if(!content[2].equals("")){
 			msg.setEndpoint(content[2]);
 		}
-		if(!content[3].equals("")){
+		if(content.length > 3 && !content[3].equals("")){
 			msg.setMessageData(content[3]);
 		}
 		return msg;
