@@ -1,2 +1,5 @@
 _notes
 .DS_Store
+.settings
+.project
+.classpath
