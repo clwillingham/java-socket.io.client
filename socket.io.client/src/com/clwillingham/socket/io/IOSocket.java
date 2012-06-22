@@ -72,7 +72,7 @@ public class IOSocket {
 			}
 			data.put("name", event);
 			data.put("args", args);
-			IOMessage packet = new IOMessage(IOMessage.EVENT, "", data.toString());
+			IOMessage packet = new IOMessage(IOMessage.EVENT, webSocket.getNamespace(), data.toString());
 			webSocket.sendMessage(packet);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -81,7 +81,7 @@ public class IOSocket {
 	}
 	
 	public void send(String message) throws IOException {
-		IOMessage packet = new IOMessage(IOMessage.MESSAGE, "", message);
+		IOMessage packet = new IOMessage(IOMessage.MESSAGE, webSocket.getNamespace(), message);
 		webSocket.sendMessage(packet);
 	}
 	
@@ -89,7 +89,7 @@ public class IOSocket {
 		if (connected) {
 			try {
 				if (open) {
-					webSocket.sendMessage(new IOMessage(IOMessage.DISCONNECT, "", ""));
+					webSocket.sendMessage(new IOMessage(IOMessage.DISCONNECT, webSocket.getNamespace(), ""));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
