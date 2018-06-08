@@ -1,3 +1,7 @@
+DEPRECATED
+============
+Please see the [Socket.IO website](http://socket.io/) for alternatives.
+
 Java Socket.IO Client
 =============
 
